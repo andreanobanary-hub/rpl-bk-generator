@@ -9,15 +9,15 @@ export async function POST(req: Request) {
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
       return NextResponse.json(
-        { error: "GEMINI_API_KEY belum diisi di Vercel Environment Variables." },
+        { error: "GEMINI_API_KEY belum dikonfigurasi di Environment Variables Vercel." },
         { status: 500 }
       );
     }
 
     const genAI = new GoogleGenerativeAI(apiKey);
-     const model = genAI.getGenerativeModel({
-     model: "gemini-1.5-flash-latest",
-     systemInstruction: BK_SYSTEM_PROMPT,
+    const model = genAI.getGenerativeModel({
+      model: "gemini-3-flash-preview",
+      systemInstruction: BK_SYSTEM_PROMPT,
     });
 
     const userPrompt = `
@@ -38,7 +38,7 @@ Sertakan lampiran uraian materi pemantik dan lembar kerja peserta didik (LKPD) r
   } catch (error: any) {
     console.error("API Error:", error);
     return NextResponse.json(
-      { error: error?.message || "Gagal memproses RPL." },
+      { error: error?.message || "Terjadi kesalahan saat memproses RPL." },
       { status: 500 }
     );
   }
