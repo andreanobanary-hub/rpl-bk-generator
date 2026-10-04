@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import { BK_SYSTEM_PROMPT } from "@/lib/prompt";
 
 export async function POST(req: Request) {
@@ -9,12 +9,16 @@ export async function POST(req: Request) {
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
       return NextResponse.json(
-        { error: "GEMINI_API_KEY belum dikonfigurasi di Environment Variables." },
+        { error: "GEMINI_API_KEY belum dikonfigurasi di Environment Variables Vercel." },
         { status: 500 }
       );
     }
 
-    const ai = new GoogleGenAI({ apiKey });
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const model = genAI.getGenerativeModel({
+      model: "gemini-1.5-flash",
+      systemInstruction: BK_SYSTEM_PROMPT,
+    });
 
     const userPrompt = `
 Susunlah RPL Bimbingan Klasikal Format POP BK Kurikulum Merdeka:
@@ -27,17 +31,10 @@ Susunlah RPL Bimbingan Klasikal Format POP BK Kurikulum Merdeka:
 Sertakan lampiran uraian materi pemantik dan lembar kerja peserta didik (LKPD) reflektif.
 `;
 
-    const response = await ai.models.generateContent({
-      model: "gemini-1.5-flash",
-      contents: userPrompt,
-      config: {
-        systemInstruction: BK_SYSTEM_PROMPT,
-        temperature: 0.7,
-      },
-    });
+    const result = await model.generateContent(userPrompt);
+    const responseText = result.response.text();
 
-    const resultText = response.text || "Tidak ada teks yang dihasilkan.";
-    return NextResponse.json({ rpl: resultText });
+    return NextResponse.json({ rpl: responseText });
   } catch (error: any) {
     console.error("API Error:", error);
     return NextResponse.json(
