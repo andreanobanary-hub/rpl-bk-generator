@@ -9,7 +9,7 @@ export async function POST(req: Request) {
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
       return NextResponse.json(
-        { error: "GEMINI_API_KEY belum dikonfigurasi di Environment Variables Vercel." },
+        { error: "GEMINI_API_KEY belum diisi di Vercel Environment Variables." },
         { status: 500 }
       );
     }
@@ -38,7 +38,7 @@ Sertakan lampiran uraian materi pemantik dan lembar kerja peserta didik (LKPD) r
   } catch (error: any) {
     console.error("API Error:", error);
     return NextResponse.json(
-      { error: error?.message || "Terjadi kesalahan saat memproses RPL." },
+      { error: error?.message || "Gagal memproses RPL." },
       { status: 500 }
     );
   }
